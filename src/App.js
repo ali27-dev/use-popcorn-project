@@ -56,22 +56,28 @@ export default function App() {
     <>
       {/* {<Navbar query={query} onSetQuery={setQuery} movies={movies} />} */}
       {/* <Box onSetIsOpen1={setIsOpen1} isOpen1={isOpen1} movies={movies} /> */}
-      <Navbar movies={movies} />
+
+      <Navbar>
+        <Search />
+        <NumResult movies={movies} />
+      </Navbar>
+
       <main className="main">
-        <ListBox movies={movies} />
+        <ListBox>
+          <MovieList movies={movies} />
+        </ListBox>
         <WatchedBox />
       </main>
     </>
   );
 }
 
-function Navbar({ movies }) {
+function Navbar({ children }) {
   return (
     <>
       <nav className="nav-bar">
         <Logo />
-        <Search />
-        <NumResult movies={movies} />
+        {children}
       </nav>
     </>
   );
@@ -100,16 +106,15 @@ function Search() {
 }
 
 function NumResult({ movies }) {
-  const moviesCount = movies.length;
   return (
     <p className="num-results">
-      Found <strong>{moviesCount}</strong> results
+      Found <strong>{movies.length}</strong> results
     </p>
   );
 }
 
 // List-Box
-function ListBox({ movies }) {
+function ListBox({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <>
@@ -120,7 +125,7 @@ function ListBox({ movies }) {
         >
           {isOpen1 ? "–" : "+"}
         </button>
-        {isOpen1 && <MovieList movies={movies} />}
+        {isOpen1 && children}
       </div>
     </>
   );
