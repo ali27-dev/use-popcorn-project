@@ -16,8 +16,10 @@ export default function StarRating({
   size = 48,
   className = "",
   messages = [],
+  defaultRat = 0,
+  onSetMovieRat,
 }) {
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(defaultRat);
   const [tempRating, setTempRating] = useState(0);
 
   const textStyle = {
@@ -29,6 +31,7 @@ export default function StarRating({
 
   function handleRating(rating) {
     setRating(rating);
+    onSetMovieRat(rating);
   }
   return (
     <div style={ratingContainer} className={className}>
