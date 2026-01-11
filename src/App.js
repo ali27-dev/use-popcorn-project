@@ -58,7 +58,8 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoding, setIsLoding] = useState(false);
   const [error, setError] = useState("");
-  const teamQuery = "interstellar";
+  const [selectedId, setSelectedId] = useState(null);
+
   /*
   useEffect(function () {
     console.log("A");
@@ -70,6 +71,13 @@ export default function App() {
 
   console.log("C");
 */
+  function handleSelectedId(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+  function handleCloseId() {
+    setSelectedId(null);
+  }
+
   useEffect(
     function () {
       async function fetchMovies() {
@@ -85,8 +93,10 @@ export default function App() {
           const data = await res.json();
 
           if (data.Response === "False") throw new Error("Movie not found!");
+          // console.log(data);
 
           setMovies(data.Search);
+          setError("");
         } catch (error) {
           console.error(error.message);
           setError(error.message);
@@ -119,16 +129,34 @@ export default function App() {
         <Box>
           {/* {isLoding ? <Loding /> : <MovieList movies={movies} />} */}
           {isLoding && <Loding />}
-          {!isLoding && !error && <MovieList movies={movies} />}
-          {error && <ErrorMessage />}
+          {!isLoding && !error && (
+            <MovieList movies={movies} onSelectedMovie={handleSelectedId} />
+          )}
+          {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onHandleClose={handleCloseId}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
       </Main>
     </>
   );
+}
+function Loding() {
+  return <p className="loader">Loding...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return <p className="error">❌{message}</p>;
 }
 
 function Navbar({ children }) {
@@ -213,26 +241,25 @@ function Box({ children }) {
 //   );
 // }
 
-function Loding() {
-  return <p className="loading">Loding...</p>;
-}
-function ErrorMessage({ error }) {
-  return <p className="error">Falied to Fatch Movie</p>;
-}
-function MovieList({ movies }) {
+function MovieList({ movies, onSelectedMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie
+          movie={movie}
+          key={movie.imdbID}
+          onSelectedMovie={onSelectedMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, onSelectedMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectedMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
+
       <h3>{movie.Title}</h3>
       <div>
         <p>
@@ -241,6 +268,19 @@ function Movie({ movie }) {
         </p>
       </div>
     </li>
+  );
+}
+
+function MovieDetails({ selectedId, onHandleClose }) {
+  return (
+    <>
+      <div className="details">
+        <button className="btn-back" onClick={onHandleClose}>
+          &larr;
+        </button>
+        {selectedId}
+      </div>
+    </>
   );
 }
 
