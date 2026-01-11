@@ -56,16 +56,29 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoding, setIsLoding] = useState(false);
-
+  const [error, setError] = useState("");
+  const query = "interstellar";
   useEffect(function () {
-    setIsLoding(true);
     async function fetchMovies() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
-      setIsLoding(false);
+      try {
+        setIsLoding(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+        if (!res.ok)
+          throw new Error("Something went wrong with movie fetching movies");
+
+        const data = await res.json();
+        console.log(data);
+        if (data.Response === "False") throw new Error("Movie not found!");
+
+        setMovies(data.Search);
+      } catch (error) {
+        console.error(error.message);
+        setError(error.message);
+      } finally {
+        setIsLoding(false);
+      }
     }
     fetchMovies();
   }, []);
@@ -81,7 +94,12 @@ export default function App() {
       </Navbar>
 
       <Main>
-        <Box>{isLoding ? <Loding /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {/* {isLoding ? <Loding /> : <MovieList movies={movies} />} */}
+          {isLoding && <Loding />}
+          {!isLoding && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage />}
+        </Box>
         <Box>
           <WatchedSummary watched={watched} />
           <WatchedMovieList watched={watched} />
@@ -144,7 +162,7 @@ function Box({ children }) {
           className="btn-toggle"
           onClick={() => setIsOpen((open) => !open)}
         >
-          {isOpen ? "–" : "+"}
+          {isOpen ? "-" : "+"}
         </button>
         {isOpen && children}
       </div>
@@ -175,7 +193,10 @@ function Box({ children }) {
 // }
 
 function Loding() {
-  return <p>Loding...</p>;
+  return <p className="loading">Loding...</p>;
+}
+function ErrorMessage({ error }) {
+  return <p className="error">Falied to Fatch Movie</p>;
 }
 function MovieList({ movies }) {
   return (
