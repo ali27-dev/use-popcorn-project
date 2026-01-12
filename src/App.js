@@ -54,7 +54,7 @@ const average = (arr) =>
 const KEY = "c92f650b";
 
 export default function App() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("inception");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoding, setIsLoding] = useState(false);
@@ -335,6 +335,14 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
       getMovieDetails();
     },
     [selectedId]
+  );
+
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title} `;
+    },
+    [title]
   );
   return (
     <>
