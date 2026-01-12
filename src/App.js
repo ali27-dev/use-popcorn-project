@@ -341,6 +341,10 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
     function () {
       if (!title) return;
       document.title = `Movie | ${title} `;
+      return function (param) {
+        document.title = "usePopcorn";
+        console.log(`The Movie we cancel is ${title}`);
+      };
     },
     [title]
   );
