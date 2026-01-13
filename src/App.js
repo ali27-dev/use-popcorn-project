@@ -324,6 +324,21 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onHandleClose();
   }
+  useEffect(
+    function () {
+      function callback(e) {
+        if (e.code === "Escape") {
+          onHandleClose();
+          console.log("Close");
+        }
+      }
+      document.addEventListener("keydown", callback);
+      return function () {
+        document.removeEventListener("keydown", callback);
+      };
+    },
+    [onHandleClose]
+  );
 
   useEffect(
     function () {
