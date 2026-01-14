@@ -47,6 +47,7 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
+
 // Calculating average
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -58,10 +59,15 @@ const KEY = "c92f650b";
 export default function App() {
   const [query, setQuery] = useState("inception");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoding, setIsLoding] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValues = localStorage.getItem("watched");
+    return JSON.parse(storedValues);
+  });
 
   /*
   useEffect(function () {
@@ -86,11 +92,22 @@ export default function App() {
   // Handling Add watched Movie
   function handleAddWatched(movie) {
     setWatched((watched) => [...watched, movie]);
+
+    // Storing Data in Local Storage
+    // localStorage.setItem("watched", JSON.stringify([...watched, movie]));
   }
   // Handling Delete watched Movie
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
+
+  /// Storing Data in Local Storage using useEffect ///
+  useEffect(
+    function () {
+      localStorage.setItem("watched", JSON.stringify(watched));
+    },
+    [watched]
+  );
 
   /////////////////////////////////////////////
   ///useEffect For Getting Data from imd API///
