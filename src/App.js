@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 // Initail temporary Movie Data
 const tempMovieData = [
@@ -57,7 +57,7 @@ const KEY = "c92f650b";
 
 // APP Component
 export default function App() {
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [isLoding, setIsLoding] = useState(false);
   const [error, setError] = useState("");
@@ -236,6 +236,34 @@ function Logo() {
 /////////////////////
 ////// Search //////
 function Search({ query, setQuery }) {
+  const inputEl = useRef(null);
+
+  useEffect(
+    function () {
+      function Callback(e) {
+        if (document.activeElement === inputEl.current) return;
+
+        if (e.code === "Enter") {
+          console.log(inputEl.current);
+          inputEl.current.focus();
+          setQuery("");
+        }
+      }
+
+      document.addEventListener("keydown", Callback);
+      return function () {
+        document.addEventListener("keydown", Callback);
+      };
+    },
+    [setQuery]
+  );
+
+  // useEffect(function(){
+  //   const el = document.querySelector('.search');
+  //   console.log(el);
+  //   el.focus();
+  // },[])
+
   return (
     <input
       className="search"
@@ -243,6 +271,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
