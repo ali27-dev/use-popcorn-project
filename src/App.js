@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorage } from "./useLocalStorage";
 // Initail temporary Movie Data
 const tempMovieData = [
   {
@@ -61,15 +62,12 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
-  /////////////////////////////////////////////
-  ///useEffect For Getting Data from imd API///
+  ////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\
+  ///useEffect For Getting Data from imd API\\\
   const { movies, isLoding, error } = useMovies(query);
 
-  // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValues = localStorage.getItem("watched");
-    return JSON.parse(storedValues);
-  });
+  /// Storing Data in Local Storage Custom Hook \\\\\
+  const [watched, setWatched] = useLocalStorage([], "watched");
 
   /*
   useEffect(function () {
@@ -102,14 +100,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  /// Storing Data in Local Storage using useEffect ///
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched]
-  );
 
   return (
     <>
