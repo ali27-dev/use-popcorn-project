@@ -368,12 +368,21 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [loding, setLoding] = useState(false);
   const [userRatings, setUserRating] = useState("");
+  const counterRef = useRef(0);
+
   // Already Rated Movie
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   // Already Rated Movie showing Rating in UI
   const watchedUserRating = watched.find(
     (movie) => movie.imdbID === selectedId
   )?.userRatings;
+
+  useEffect(
+    function () {
+      if (userRatings) counterRef.current++;
+    },
+    [userRatings]
+  );
   // Destructuring Movie Details
   const {
     Title: title,
@@ -398,6 +407,7 @@ function MovieDetails({ selectedId, onHandleClose, onAddWatched, watched }) {
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
       userRatings,
+      countRatingDecisions: counterRef.current,
     };
 
     onAddWatched(newWatchedMovie);
